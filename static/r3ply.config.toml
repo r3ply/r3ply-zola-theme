@@ -1,3 +1,4 @@
+#:schema https://r3ply.com/schemas/v0.0.1/config/site.v0.0.1.json
 version = "0.0.1"
 enabled = true
 
@@ -5,11 +6,12 @@ enabled = true
 domain = "site.local.test"
 r3ply = "cli.r3ply.test"
 signet = "A2hioZg5Y-YnjzgOgs4bQw"
-issued = "2026-06-21"
+issued = 2026-06-21
 label = "CLI"
 
 [comments.email]
 enabled = true
+"&comment_{}" = "comment.template.md"
 
 [moderation]
 enabled = true
@@ -17,7 +19,4 @@ github = [ ]
 webhook = [ ]
 
   [[moderation.local]]
-  "file_path_{}" = "comment_{{ comment.id[:8] }}.json"
-  enabled = true
-  "allow*" = [ ]
-
+  "file_path_{}" = "content/comments/{{ comment.ts_rcvd }}_{{ comment.id[:8] }}-{{ author.pseudonym[:7] }}.md"
