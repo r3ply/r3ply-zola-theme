@@ -1,0 +1,23 @@
+version = "0.0.1"
+enabled = true
+
+[[site]]
+domain = "site.local.test"
+r3ply = "cli.r3ply.test"
+signet = "A2hioZg5Y-YnjzgOgs4bQw"
+issued = "2026-06-21"
+label = "CLI"
+
+[comments.email]
+enabled = true
+
+[moderation]
+enabled = true
+github = [ ]
+webhook = [ ]
+
+  [[moderation.local]]
+  "file_path_{}" = "comment_{{ comment.id[:8] }}.json"
+  enabled = true
+  "allow*" = [ ]
+
