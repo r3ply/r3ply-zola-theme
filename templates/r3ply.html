@@ -1,9 +1,11 @@
+{% import "comments.html" as comments %}
+
 {#
-  This macro takes a comment page, and will return a stringified list of ancestors comment ID's, ordered from most to least recent. It can be made into a real list by splitting on ','
+    This macro takes a comment page, and will return a stringified list of ancestors comment ID's, ordered from most to least recent. It can be made into a real list by splitting on ','
 
-  `stop_at` is an optional parameter, where you can specify the ID of an ancestor to stop at.
+    `stop_at` is an optional parameter, where you can specify the ID of an ancestor to stop at.
 
-  Note: how everything is printed matters so be careful with whitespace
+    Note: how everything is printed matters so be careful with whitespace
 
   E.g.
   A
@@ -23,7 +25,10 @@
 {%- endmacro -%}
 
 
-{% macro get_tree_by_recent_activity(nodes) %}
+{#
+    This macro takes a list of comments as zola pages and it renders them in the order of thread with the most recent activity. A thread is a comment and all of its descendants. To customize the HTML view the `write_thread` macro inside the comments.html file.
+#}
+{% macro render_comments_sorted_by_activity(nodes) %}
 {# Make sorted list of nodes in reverse chronological order #}
 {% set most_recent_nodes = nodes | sort(attribute="date") | reverse %}
 
@@ -70,18 +75,7 @@
   {% set root = thread | first %}
   {% if root.id not in written %}
     {% set_global written = written | concat(with=root.id) %}
-    {{ self::write_thread(node=nodes | filter(attribute="slug", value=root.id) | first, nodes=updated_nodes) }}
+    {{ comments::write_thread(parent=nodes | filter(attribute="slug", value=root.id) | first, comments=updated_nodes) }}
   {% endif %}
 {% endfor %}
-{% endmacro  %}
-
-{% macro write_thread(node, nodes) %}
-{% set children = nodes | filter(attribute="taxonomies.replies.1", value=node.slug) | sort(attribute="extra.latest_activity") | reverse %}
-<details open class="w-96">
-  <summary class="font-mono border-b">#{{ node.slug }} | {{ node.date }}</summary>
-  {{ node.content | safe }}
-  <div class="ml-8">
-  {% for child in children %}{{ self::write_thread(node=child, nodes=nodes) }}{% endfor %}
-  </div>
-</details>
 {% endmacro  %}

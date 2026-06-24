@@ -12,12 +12,6 @@ subjects = {{ [comment.subject.path[1:-1]] | str }}
 # groups comments by thread (the thread is the comment + its replies, and their replies, etc...)
 # "all" is a special thread of all comments (used mainly because each tax. term generates an RSS feed)
 threads = {{ ["all", comment.id[:8]] | str }}
-{#
-# Or you could do this: which assumes the whole ancestry of the thread is in the fragment, separated by "/"
-# threads = {{ [...(comment.subject.fragment[1:] | split(pat="/")
-#  if comment.subject.fragment and comment.subject.fragment is not starting_with(pat="#:~:test")
-#  else []), comment.id[:8]] | str }}
-#}
 
 # used to groups comments by replies (i.e. a comments direct children)
 # first member is always itself, so that an RSS feed is guaranteed to exist

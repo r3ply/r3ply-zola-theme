@@ -1,0 +1,22 @@
+name = "r3ply Zola theme"
+description = "Add comments to your static website"
+# An optional tags to allow quick search
+tags = ["commenting", "comments", "r3ply", "email", "static sites", "zola"]
+license = "MIT"
+homepage = "https://github.com/getzola/hyde"
+# The minimum version of Zola required
+min_version = "0.20.0"
+# An optional live demo URL
+demo = "https://r3ply.com/demo/"
+
+# Any variable there can be overridden in the end user `zola.toml`
+# You don't need to prefix variables by the theme name but as this will
+# be merged with user data, some kind of prefix or nesting is preferable
+# Use snake_casing to be consistent with the rest of Zola
+[extra]
+domain = "<YOUR_SITE_DOMAIN>"
+
+# The theme author info: you!
+[author]
+name = "Spencer Van Wessem Scorcelletti"
+homepage = "https://spenc.es"

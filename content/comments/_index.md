@@ -1,10 +1,5 @@
 +++
-title = "All comments"
-template = "debug.html"
-generate_feeds = true
 +++
-
-
 
 # All Comments
 

@@ -1,0 +1,21 @@
+{% import "r3ply/util.html" as util %}
+
+{#
+    `parent`    is the top of this comment subtree
+    `comments`  is just a pool of comments constituting consisting of the whole thread
+#}
+{% macro write_thread(parent, comments) %}
+{% set children = comments | filter(attribute="taxonomies.replies.1", value=parent.slug) | sort(attribute="extra.latest_activity") | reverse %}
+<details open style="width: 512px;">
+  <summary style="border: solid 0px; border-bottom-width: 1px;">#{{ parent.slug }} | {{ parent.date }}</summary>
+  {{ parent.content | safe }}
+  <a href="{{ util::mailto(to=config.extra.domain | default(value='CHANGE_ME'), subject='subject', body='body') }}">reply</a>
+  <div style="margin-left: 20px; padding-top: 10px;">
+    {% for child in children %}
+      {# NOTE 1: this shouldn't work—it should be `self::write_thread`—but it's the only way. See https://github.com/getzola/zola/issues/2316 #}
+      {# NOTE 2: this does work because upstream r3ply.html imports comments as `comments` which introduces that as a like a global variable #}
+      {{ comments::write_thread(parent=child, comments=comments) }}
+    {% endfor %}
+  </div>
+</details>
+{% endmacro  %}
