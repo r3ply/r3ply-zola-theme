@@ -28,54 +28,54 @@
 {#
     This macro takes a list of comments as zola pages and it renders them in the order of thread with the most recent activity. A thread is a comment and all of its descendants. To customize the HTML view the `write_thread` macro inside the comments.html file.
 #}
-{% macro render_comments_sorted_by_activity(nodes) %}
-{# Make sorted list of nodes in reverse chronological order #}
-{% set most_recent_nodes = nodes | sort(attribute="date") | reverse %}
+{% macro render_comments_sorted_by_activity(comments) %}
+{# Make sorted list of comments in reverse chronological order #}
+{% set most_recent_comments = comments | sort(attribute="date") | reverse %}
 
 {# Build list of lists of ancestors #}
 {% set list_of_lists_of_ancestors = [] %}
 {% set seen = [] %}
-{% for n in most_recent_nodes %}
-  {# Get ancestors to n #}
-  {% set ancestors_for_n = self::get_ancestors(node=n) | split(pat=",") %}
+{% for comment in most_recent_comments %}
+  {# Get ancestors to comment #}
+  {% set ancestors_of_comment = self::get_ancestors(node=comment) | split(pat=",") %}
   {% set_global ok_to_add = false %}
-  {% for a in ancestors_for_n %}
+  {% for a in ancestors_of_comment %}
     {% if a not in seen %}
     {% set_global seen = seen | concat(with=a) %}
     {% set_global ok_to_add = true %}
     {% endif %}
   {% endfor %}
-  {% if ok_to_add %}{% set_global list_of_lists_of_ancestors = list_of_lists_of_ancestors | concat(with=[ancestors_for_n]) %}{% endif %}
+  {% if ok_to_add %}{% set_global list_of_lists_of_ancestors = list_of_lists_of_ancestors | concat(with=[ancestors_of_comment]) %}{% endif %}
 {% endfor %}
 
-{% set list_of_nodes_by_activity = [] %}
+{% set list_of_comments_by_activity = [] %}
 {% set list_of_threads = [] %}
 {% set_global list_with_activity = [] %}
 {% for list in list_of_lists_of_ancestors %}
   {% for node in list %}
   {# Get latest activity among ancestors #}
-  {% if loop.first %}{% set_global latest_activity = nodes | filter(attribute="slug", value=node) | first | get(key="date") %}{% endif %}
+  {% if loop.first %}{% set_global latest_activity = comments | filter(attribute="slug", value=node) | first | get(key="date") %}{% endif %}
   {% set json = load_data(literal='{
     "id": ' ~ '"' ~ node ~ '",
     "latest_activity": ' ~ '"' ~ latest_activity ~ '"
   }', format="json") %}
   {% set_global list_with_activity = list_with_activity | concat(with=json) %}
   {% endfor %}
-  {% set_global activity_grouped_by_id = list_of_nodes_by_activity | concat(with=list_with_activity) | group_by(attribute="id") %}
+  {% set_global activity_grouped_by_id = list_of_comments_by_activity | concat(with=list_with_activity) | group_by(attribute="id") %}
   {% set_global list_of_threads = list_of_threads | concat(with=[list_with_activity | reverse]) %}
 {% endfor %}
-{% set updated_nodes = [] %}
-{% for n in nodes %}
-{% set latest_activity = activity_grouped_by_id[n.slug][0].latest_activity %}
-{% set updated = load_data(literal=n | json_encode | regex_replace(pattern='"extra":\{', rep='"extra":{ "latest_activity": ' ~ '"' ~ latest_activity ~ '",'), format="json") %}
-{% set_global updated_nodes = updated_nodes | concat(with=updated) %}
+{% set updated_comments = [] %}
+{% for comment in comments %}
+{% set latest_activity = activity_grouped_by_id[comment.slug][0].latest_activity %}
+{% set updated = load_data(literal=comment | json_encode | regex_replace(pattern='"extra":\{', rep='"extra":{ "latest_activity": ' ~ '"' ~ latest_activity ~ '",'), format="json") %}
+{% set_global updated_comments = updated_comments | concat(with=updated) %}
 {% endfor %}
 {% set written = [] %}
 {% for thread in list_of_threads %}
   {% set root = thread | first %}
   {% if root.id not in written %}
     {% set_global written = written | concat(with=root.id) %}
-    {{ comments::write_thread(parent=nodes | filter(attribute="slug", value=root.id) | first, comments=updated_nodes) }}
+    {{ comments::write_thread(parent=comments | filter(attribute="slug", value=root.id) | first, comments=updated_comments) }}
   {% endif %}
 {% endfor %}
 {% endmacro  %}

@@ -162,7 +162,7 @@ For example:
     {% set comments = get_section(path="comments/_index.md") | get(key="pages") %}
   {% endblock choose_comments %}
   {% block render_comments %}
-    {{ r3ply::render_comments_sorted_by_activity(nodes=comments) }}
+    {{ r3ply::render_comments_sorted_by_activity(comments=comments) }}
   {% endblock render_comments %}
   {% endblock comments %}
 </body>
