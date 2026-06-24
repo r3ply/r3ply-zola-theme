@@ -1,0 +1,108 @@
+{#
+  This macro takes a comment page, and will return a stringified list of ancestors comment ID's, ordered from most to least recent. It can be made into a real list by splitting on ','
+
+  `stop_at` is an optional parameter, where you can specify the ID of an ancestor to stop at.
+
+  Note: how everything is printed matters so be careful with whitespace
+
+  E.g.
+  A
+   \
+    B
+     \
+      C
+  get_ancestors(C) -> "[C, B, A]"
+#}
+{%- macro get_ancestors(node, stop_at=false) -%}
+  {{ node.slug }}{# always print the current node #}
+  {%- set ancestor = node.extra.comment.in_reply_to -%}
+  {%- if ancestor == false or stop_at | as_str in ancestor -%}{# base case: ancestor of node is false or end—do nothing #}
+  {%- else -%}{# recursive case: print comma and call get_root, continuing upwards #}
+    {%- set ancestor=get_taxonomy_term(kind="threads", term=node.taxonomies.replies[1]) | get(key="pages") | nth(n=0) -%},{{ self::get_ancestors(node=ancestor, stop_at=stop_at) }}
+  {%- endif -%}
+{%- endmacro -%}
+
+
+{% macro get_tree_by_recent_activity(nodes) %}
+{# Make sorted list of nodes in reverse chronological order #}
+{% set most_recent_nodes = nodes | sort(attribute="date") | reverse %}
+MOST RECENT: {{ most_recent_nodes | map(attribute="slug") }} <br>
+
+{# Make object of nodes keyed on slug (i.e. ID) #}
+{% set nodes_grouped_by_slug = nodes | group_by(attribute="slug") %}
+
+{# Build list of lists of ancestors #}
+{% set list_of_lists_of_ancestors = [] %}
+{% set seen = [] %}
+{% for n in most_recent_nodes %}
+  N: {{ n.slug }} <br>
+  {# Get ancestors to n #}
+  {% set ancestors_for_n = self::get_ancestors(node=n) | split(pat=",") %}
+  - ANCESTORS.: {{ ancestors_for_n}} <br>
+  {% set_global ok_to_add = false %}
+  {% for a in ancestors_for_n %}
+    {% if a not in seen %}
+    {% set_global seen = seen | concat(with=a) %}
+    {% set_global ok_to_add = true %}
+    - ADDED <br>
+    {% endif %}
+  {% endfor %}
+  - SEEN: {{ seen }} <br>
+  {% if ok_to_add %}{% set_global list_of_lists_of_ancestors = list_of_lists_of_ancestors | concat(with=[ancestors_for_n]) %}{% endif %}
+  --- <br>
+{% endfor %}
+LIST OF LISTS OF ANCESTORS {{ list_of_lists_of_ancestors }} <br>
+
+{% set list_of_nodes_by_activity = [] %}
+{% set list_of_threads = [] %}
+{% set_global list_with_activity = [] %}
+{% for list in list_of_lists_of_ancestors %}
+  {% for node in list %}
+  - NODE IN LIST: {{ node }} <br>
+  {# Get latest activity among ancestors #}
+  {% if loop.first %}{% set_global latest_activity = nodes | filter(attribute="slug", value=node) | first | get(key="date") %}{% endif %}
+  {% set json = load_data(literal='{
+    "id": ' ~ '"' ~ node ~ '",
+    "latest_activity": ' ~ '"' ~ latest_activity ~ '"
+  }', format="json") %}
+  - JSON: {{ json | json_encode }} <br>
+  {% set_global list_with_activity = list_with_activity | concat(with=json) %}
+  LIST WITH ACTIVITY IN LOOP: {{ list_with_activity | json_encode }} <br>
+  {% endfor %}
+  LIST WITH ACTIVITY: {{ list_with_activity | json_encode }} <br>
+  {% set_global activity_grouped_by_id = list_of_nodes_by_activity | concat(with=list_with_activity) | group_by(attribute="id") %}
+  {% set_global list_of_threads = list_of_threads | concat(with=[list_with_activity | reverse]) %}
+{% endfor %}
+--- <br>
+NODES BY ACTIVITY GROUPED = {{ activity_grouped_by_id | json_encode }} <br>
+LIST OF THREADS = {{ list_of_threads | sort(attribute=".0.latest_activity") | reverse | json_encode }} <br>
+{% set updated_nodes = [] %}
+{% for n in nodes %}
+{% set latest_activity = activity_grouped_by_id[n.slug][0].latest_activity %}
+{% set updated = load_data(literal=n | json_encode | regex_replace(pattern='"extra":\{', rep='"extra":{ "latest_activity": ' ~ '"' ~ latest_activity ~ '",'), format="json") %}
+{% set_global updated_nodes = updated_nodes | concat(with=updated) %}
+{% endfor %}
+--- <br>
+GROUPED LIST OF THREADS: {{ list_of_threads | group_by(attribute=".0.id") | json_encode }} <br>
+{% set written = [] %}
+{% for thread in list_of_threads %}
+  {% set root = thread | first %}
+  {% if root.id not in written %}
+    {% set_global written = written | concat(with=root.id) %}
+    ROOT: {{ root.id }} <br>
+    {{ self::write_thread(node=nodes | filter(attribute="slug", value=root.id) | first, nodes=updated_nodes) }}
+  {% endif %}
+{% endfor %}
+{% endmacro  %}
+
+{% macro write_thread(node, nodes) %}
+--- <br>
+<div class="ml-2 border">
+NODE: {{ node.slug }} <br>
+{% set children = nodes | filter(attribute="taxonomies.replies.1", value=node.slug) | sort(attribute="extra.latest_activity") | reverse %}
+CHILDREN: {{ children | map(attribute="slug") }} <br>
+{% for child in children %}
+{{ self::write_thread(node=child, nodes=nodes) }}
+{% endfor %}
+</div>
+{% endmacro  %}

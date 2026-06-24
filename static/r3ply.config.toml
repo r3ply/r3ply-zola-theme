@@ -20,3 +20,4 @@ webhook = [ ]
 
   [[moderation.local]]
   "file_path_{}" = "content/comments/{{ comment.ts_rcvd }}_{{ comment.id[:8] }}-{{ author.pseudonym[:7] }}.md"
+  enabled = true
