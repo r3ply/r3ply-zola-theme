@@ -195,8 +195,12 @@ For example, the basic `write_thread` macro could be modified to use tailwind cl
   <article class="my-2">
   {{ parent.content | safe }}
   </article>
+  {% set subject = "/" ~ parent.taxonomies.subjects[0] ~ "/#" ~ parent.slug %}
   <div class="m-2">
-    <a class="px-2 py-1 rounded-xl border text-purple-400" href="{{ util::mailto(to=config.extra.domain | default(value='CHANGE_ME'), subject='subject', body='body') }}">reply</a>
+    <a class="px-2 py-1 rounded-xl border text-purple-400"
+    href="{{ util::mailto(to=config.extra.domain | default(value='CHANGE_ME'),
+    subject=subject,
+    body='') }}">reply</a>
   </div>
   <div class="ml-4 pt-2">
     {% for child in children %}
