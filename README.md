@@ -56,6 +56,9 @@ signet = "A2hioZg5Y-YnjzgOgs4bQw"
 issued = 2026-06-21
 label = "CLI"
 
+[comments]
+"paths*" = ["!/", "!{,/}comments{,/}"]
+
 [comments.email]
 enabled = true
 "&comment_{}" = "comment.template.md"

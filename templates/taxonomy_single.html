@@ -4,6 +4,8 @@
 {# Override body #}
 {% block body %}
 <main>
+  {% block heading %}
+  {% endblock heading %}
   {# Render stuff here. Use setup block (in base.html) to expose any variables that might be used. #}
   {% block render %}
   {% endblock render %}

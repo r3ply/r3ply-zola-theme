@@ -8,9 +8,9 @@
 {% endblock setup %}
 
 {% block body %}
-{% block comments %}
-<section id="comments">
-  {{ r3ply::render_comments_sorted_by_activity(comments=comments) }}
-</section>
-{% endblock comments %}
+  {% block comments %}
+  <section id="comments">
+    {{ r3ply::render_comments_sorted_by_activity(comments=comments) }}
+  </section>
+  {% endblock comments %}
 {% endblock body %}
