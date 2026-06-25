@@ -1,0 +1,21 @@
+{% import "r3ply.html" as r3ply %}
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  {% set parent = term.pages | first %}
+  {% set subject_comments = get_taxonomy_term(kind="subjects", term=parent.taxonomies.subjects[0])
+    | get(key="pages") | group_by(attribute="slug") %}
+  {% set descendant_ids = r3ply::get_descendants(parent=parent) | split(pat=",") %}
+  {% set comments = [] %}
+  {# Get pages of descendants #}
+  {% for d in descendant_ids %}
+    {% set_global comments = comments | concat(with=subject_comments[d]) %}
+  {% endfor %}
+  {{ r3ply::render_comments_sorted_by_activity(comments=comments, starting_from_id=parent.slug) }}
+</body>
+</html>
