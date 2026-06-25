@@ -82,15 +82,20 @@
     This macro takes a list of comments as zola pages and it renders them in the order of thread with the most recent activity.
     A thread is a comment and all of its descendants.
     `starting_from_id` is an optional parameter from which to begin the thread, allowing one to render subtrees.
+    It will not render any comments outside of the ones given.
 
     Note: To customize the HTML edit the `write_thread` macro.
 #}
 {% macro render_comments_sorted_by_activity(comments, starting_from_id=false) %}
+{% set slugs = comments | map(attribute="slug") %}
 {% set list_of_lists_of_ancestors = [] %}
 {% set comments_with_latest_activity = [] %}
 {% set seen = [] %}
 {% for comment in comments | sort(attribute="date") | reverse %}
-  {% set ancestors_of_comment = self::get_ancestors(child=comment, stop_at_id=starting_from_id) | split(pat=",") %}
+  {# This gives the full list of ancestors, which may go past the `comments` passed in, so there's some processing below to refine that list #}
+  {% set full_ancestors_of_comment = self::get_ancestors(child=comment, stop_at_id=starting_from_id) | split(pat=",") %}
+  {% set_global ancestors_of_comment = [] %}
+  {% for a in full_ancestors_of_comment %}{% if a in slugs %}{% set_global ancestors_of_comment = ancestors_of_comment | concat(with=a) %}{% endif %}{% endfor %}
   {# Build list of lists of ancestors AND label each node with latest_activity (of its subtree) #}
   {% for a in ancestors_of_comment %}
     {% if a not in seen %}
