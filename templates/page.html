@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% import "r3ply.html" as r3ply %}
+
+{% block body %}
+{% block comments %}
+<section id="comments">
+{% set subject = page.path | split(pat="") | slice(start=2, end=-2) | join(sep="") %}
+{{ r3ply::render_comments_sorted_by_activity(comments=get_taxonomy_term(kind="subjects", term=subject) | get(key="pages")) }}
+</section>
+{% endblock comments %}
+{% endblock body %}
