@@ -16,6 +16,34 @@ Then, add the theme to the top of your zola config file
 theme="r3ply"
 ```
 
+Also add the required taxonomies to your zola config file:
+
+```toml
+###############################
+#### Begin r3ply taxonomy #####
+###############################
+
+[[taxonomies]]
+name = "commenters"
+feed = true
+
+[[taxonomies]]
+name = "subjects"
+feed = true
+
+[[taxonomies]]
+name = "threads"
+feed = false
+
+[[taxonomies]]
+name = "replies"
+feed = true
+
+###############################
+##### End r3ply taxonomy ######
+###############################
+```
+
 Finally, copy over the `comments` directory from the theme to your site's content directory.
 
 ```
@@ -83,7 +111,6 @@ re config set-default static/r3ply.config.toml
 Finally, add this r3ply comment template to static/comment.template.md.
 
 ```toml
-+++
 +++
 title = {{ comment.txt[:120] | trim | json_encode }}
 authors = {{ [author.pseudonym] | str }}
