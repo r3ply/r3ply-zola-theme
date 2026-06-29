@@ -259,7 +259,7 @@ For example:
   {% set subject = "/" ~ parent.taxonomies.subjects[0] ~ "/#" ~ parent.slug %}
   <div class="m-2">
     <a class="px-2 py-1 rounded-xl border text-purple-400"
-    href="{{ r3ply::mailto(to=config.extra.domain | default(value='CHANGE_ME'),
+    href="{{ r3ply::mailto(to=config.extra.r3ply.to_email | default(value='CHANGE_ME'),
     subject=subject,
     body='') }}">reply</a>
   </div>
