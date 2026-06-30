@@ -1,5 +1,8 @@
 # r3ply-zola-theme
-A Zola theme that adds comments to static websites.
+
+A Zola theme that add to help integrate comments to static websites using the r3ply commenting system. For more info about r3ply visit the [website](https://r3ply.com).
+
+The goal of this theme is not to add any specific look to your site, but rather to concentrate all of the experience that's come from working with comments in one place, by exposing macros that your project can import and customize.
 
 ## Installation
 
@@ -44,7 +47,7 @@ feed = true
 ###############################
 ```
 
-Finally, copy over the `comments` directory from the theme to your site's content directory.
+Finally, copy over the `comments` directory from the theme to your site's content directory. Optionally you can copy over [aliases.md](./content/aliases.md) if you want to use that functionality as well.
 
 ```
 cp -r themes/r3ply/content/comments content
@@ -281,11 +284,13 @@ With the result being something like
 
 In this example, the base `r3ply` macro namespace is imported, and each of its macros are re-implemented by calling the underlying `r3ply` macro namespace, however the `write_thread` macro is customized.
 
-Unfortunately this is necessary until tera2 comes out and the new version of Zola along with it. Otherwise macro namespaces are very fragile with themes. Fortunately, if you do it like this then you will avoid a lot of subtle and frustrating bugs later.
+Unfortunately this is necessary until tera2 comes out and the new version of Zola along with it. Otherwise macro namespaces are very fragile with themes.
 
-To customize the rendering you need to add a template called `comments.html` to your project's template directory, with a macro called `write_thread` that accepts a `parent` and `comments` argument.
+In some cases it's easier to just override the [r3ply.html](./templates/r3ply.html) template directly, instead of overriding it, due to these issues.
 
-For example, the basic `write_thread` macro could be modified to use tailwind classes:
+### Aliases
+
+This project also supports users being able to claim an alias. They do this by leaving a comment on a special [aliases](./content/aliases.md) page with the alias they prefer, and an algorithm is applied to resolve competing claims. If commenters wish to change their alias they can just comment again with whatever they wish their new alias to be.
 
 ## Project Structure
 
