@@ -18,6 +18,11 @@
   {% block link %}
   <link rel="stylesheet" href="/style.css">
   {% endblock link %}
+  {% block rss %}
+  {# You can use this block to specify the location of the feed to make them discoverable #}
+  {# E.g. <link rel="alternate" type="application/rss+xml" title="RSS/Atom"
+        href="{{ get_url(path=current_path ~ 'atom.xml', trailing_slash=false) }}"> #}
+  {% endblock rss %}
 
   {# You can add additional tags here #}
   {% block add_tags_in_head %}

@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% import "r3ply.html" as r3ply %}
 
+{% block rss %}
+{% if section and section.generate_feeds %}
+<link rel="alternate" type="application/rss+xml" title="RSS/Atom"
+      href="{{ get_url(path=current_path ~ 'atom.xml', trailing_slash=false) }}">
+{% endif %}
+{% endblock rss %}
+
 {% block setup %}
 {% set subject = section.path | split(pat="") | slice(start=2, end=-2) | join(sep="") %}
 {% set term = get_taxonomy_term(kind="subjects", term=subject, required=false) %}
