@@ -8,8 +8,6 @@ template = "aliases.html"
 
 This site uses accepts comments [via email](/todo) and therefore anonymizes email addresses with a cryptographic hash. However, if you would an alias to appear alongside your comments you can choose that here by leaving a comment with your preferred name.
 
-<!-- {# Note: I use an anchor tag here because I want to bypass internal link checking #} -->
-
 Jump straight to the <a href="#comments">comments</a>, or read the rules if you're interested:
 
 1. A comment on this page is your "alias".
