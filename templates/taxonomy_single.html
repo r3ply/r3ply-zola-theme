@@ -1,0 +1,20 @@
+{% extends "r3ply/templates/base.html" %}
+{% import "r3ply.html" as r3ply %}
+
+{% block rss %}
+{% if taxonomy and taxonomy.feed %}
+<link rel="alternate" type="application/rss+xml" title="RSS/Atom"
+      href="{{ get_url(path=current_path ~ 'atom.xml', trailing_slash=false) }}">
+{% endif %}
+{% endblock rss %}
+
+{# Override body #}
+{% block body %}
+<main>
+  {% block heading %}
+  {% endblock heading %}
+  {# Render stuff here. Use setup block (in base.html) to expose any variables that might be used. #}
+  {% block render %}
+  {% endblock render %}
+</main>
+{% endblock body %}
