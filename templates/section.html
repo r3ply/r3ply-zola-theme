@@ -35,6 +35,14 @@
     {% endfor %}
   </ul>
   {% endblock section_list %}
+  <hr>
+  {% block taxonomy_list %}
+  <ul>
+    {% for taxonomy_config in config.taxonomies %}
+    <li><a href="/{{ taxonomy_config.slug }}/">/{{ taxonomy_config.slug }}/</a></li>
+    {% endfor %}
+  </ul>
+  {% endblock taxonomy_list %}
   {% if section.extra.comments.enabled %}
   {% block comments %}
   <section id="comments">
