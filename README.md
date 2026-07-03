@@ -77,6 +77,7 @@ Then copy this config to your project at `static/r3ply.config.toml`:
 
 ```toml
 #:schema https://r3ply.com/schemas/v0.0.1/config/site.v0.0.1.json
+
 version = "0.0.1"
 enabled = true
 
@@ -93,6 +94,7 @@ label = "CLI"
 [comments.email]
 enabled = true
 "&comment_{}" = "comment.template.md"
+email_signature_separator = "-------------------"
 
 [moderation]
 enabled = true

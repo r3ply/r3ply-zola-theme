@@ -12,6 +12,7 @@ label = "CLI"
 [comments.email]
 enabled = true
 "&comment_{}" = "comment.template.md"
+email_signature_separator = "-------------------"
 
 [moderation]
 enabled = true
